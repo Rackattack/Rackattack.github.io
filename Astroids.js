@@ -18,7 +18,6 @@ function Alien()
     this.dy;
     this.alienImg = new Image();
     this.alienImg.src = "AlienShip.png"
-    //may need a bool to figure out if it should be visible or not.
 }
 function Laser()
 {
@@ -68,16 +67,13 @@ var shipspeed = 0;
 var thrustDirection = 0;
 var laserTimer = 0;
 var gameInProgress = false;//needs to be false on level changes and on no lives left.
-var shipExplodable = true;
-var explodableTimer = 0;
-
-//these must be switched when done testing -----------------------------------------------------------
-
+var shipExplodable = true;//set to true after ship dies and needs to be invincible for a while to recover
+var explodableTimer = 0;//timer to set the amount of time user gets to recover from losing a life.
 var newLevel = false;
 var menu = true;
-var gameovertimer = 100;
-var newleveltimer = 70;
-var alienShootTimer = 20;
+var gameovertimer = 100;//timer for how long the user waits when the game is over until being prompted to start again
+var newleveltimer = 70;//timer for the time in between levels
+var alienShootTimer = 20;//timer for the alien's decision to shoot at you, dependant on #of asteroids left
 
 
 
@@ -127,6 +123,7 @@ function game()
 {
     if(gameInProgress)
         {   
+            //checks to see if you beat the level and levels up if done
             if(astroids.length == 0)
                 {
                     newleveltimer--;
@@ -139,6 +136,8 @@ function game()
                         level ++;
                     }
                 }
+            
+            //checks to see if game is over and user has lost all lives
             if(lives <= 0)
             {
                 gameovertimer--;
@@ -151,6 +150,7 @@ function game()
                         gameInProgress = false;
                     }
             }
+            //checks to see if lives have been lost recently and ship is showing up as an explosion.
             else
                 {
                     if(explodableTimer==0)
@@ -162,6 +162,7 @@ function game()
                         {
                             explodableTimer--;
                         }
+                    //after all checking clear canvas and begin drawing objects
                     ctx.clearRect(0,0,canvas.width,canvas.height);
                     drawShip(ship.direction);
                     moveShip();//function that handles all moving of the ship object
@@ -174,6 +175,7 @@ function game()
                             }
                         laserTimer = 10;
                     }
+                    //AI for alien ship to shoot lasers at ship
                     for(a =0; a < astroids.length; a++)
                         {
                             alienShootTimer--;
@@ -212,7 +214,7 @@ function game()
                     ctx.strokeText("Lives: "+ lives,5,50);
                         }
         }
-    else//gameover bool to display menu page //newlevel bool to create new astroids 
+    else//menu bool to display menu page //newlevel bool to create new astroids 
             {
                 if(newLevel)
                     {
@@ -237,7 +239,7 @@ function game()
 }//gameloop
 
 
-//check collisions
+//check collisions of all objects
 function checkCollisions()
 {
     for(l of lasers)
@@ -334,7 +336,7 @@ function checkCollisions()
                                             ship.dy = 0;
                                             shipExplodable = false;
                                             ship.shipImg.src = "Explosion.png";
-                                            explodableTimer = 100;
+                                            explodableTimer = 30;
                                             lives--;
                                         }
                                 }
@@ -403,7 +405,7 @@ function checkCollisions()
                                     ship.dy = 0;
                                     shipExplodable = false;
                                     ship.shipImg.src = "Explosion.png";
-                                    explodableTimer = 100;
+                                    explodableTimer = 30;
                                     lives--;
                                 }    
                     }
